@@ -11,6 +11,7 @@ RUN apt update && apt install -y \
     vim \
     less \
     git
+USER sage
 RUN pip3 install watchdog
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["sage"]
