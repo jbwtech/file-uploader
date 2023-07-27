@@ -1,10 +1,10 @@
 import os
 import time
 import hashlib
+import subprocess
 
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
-
 
 def get_file_list(directory): 
     return [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
@@ -23,11 +23,17 @@ def wait_new_files(directory):
         time.sleep(1)
 
 def upload_file(path, name):
+    print("PATH  : ", path)
     print("FILE  : ", name)
     sum = sha1sum(path)
     print("SHA1  : ", sum)
     sum = sha256sum(path)
     print("SHA256: ", sum)
+    texfile = path
+    subprocess.run(['pdflatex', '-interaction=nonstopmode', texfile])
+
+    pdfl = PDFLaTeX.from_texfile(texfile)
+    pdf, log, completed_process = pdfl.create_pdf(keep_pdf_file=True, keep_log_file=True)
 
 def sha1sum2(filename):
     with open(filename, 'rb', buffering=0) as f:
