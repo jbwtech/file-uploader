@@ -5,9 +5,11 @@ env | grep DEBUG
 if [ "$DEBUG" == "true" ]; then
     echo -n "Clearing uploads directory ... "
     sudo rm -rf /files/uploads/*.tex
+    echo -n "Clearing downloads directory ... "
+    sudo rm -rf /files/downloads/*.tgz
     echo "done."
 fi
 
-python3 --version
+sage -python --version
 
-python3 -u file-watcher.py
+sage -python -u file-watcher.py
