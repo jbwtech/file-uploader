@@ -6,6 +6,8 @@ import subprocess
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 
+from pdflatex import PDFLaTeX
+
 def get_file_list(directory): 
     return [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
 
@@ -22,24 +24,35 @@ def wait_new_files(directory):
         previous_files = current_files
         time.sleep(1)
 
-def upload_file(path, name):
-    print("PATH  : ", path)
-    print("FILE  : ", name)
-    sum = sha1sum(path)
+def upload_file(fullpath, filename):
+    filedir = os.path.dirname(fullpath)
+    print("\nPATH  : ", filedir)
+    print("FILE  : ", filename)
+    sum = sha1sum(fullpath)
     print("SHA1  : ", sum)
-    sum = sha256sum(path)
-    print("SHA256: ", sum)
-    texfile = path
-    subprocess.run(['pdflatex', '-interaction=nonstopmode', texfile])
+    sum = sha256sum(fullpath)
+    print("SHA256: ", sum, "\n")
+    texfile = filename
 
-    pdfl = PDFLaTeX.from_texfile(texfile)
-    pdf, log, completed_process = pdfl.create_pdf(keep_pdf_file=True, keep_log_file=True)
+    # with open(f'{filedir}/{texfile}', 'rb') as f:
+    #     pdfl = PDFLaTeX.from_binarystring(f.read(), 'my_file')
 
-def sha1sum2(filename):
+    try:
+        result = subprocess.run(["./file-processor.sh", os.path.splitext(texfile)[0]], capture_output=True, text=True)
+        if( result.returncode == 0):
+            print(result.stdout)
+        else:
+            exit
+    except FileNotFoundError:
+        print("File Not Found")
+    except Exception as e:
+        print(e)
+
+def sha1sum(filename):
     with open(filename, 'rb', buffering=0) as f:
         return hashlib.file_digest(f, 'sha1').hexdigest()
 
-def sha1sum(filename):
+def sha1sum2(filename):
     h  = hashlib.sha1()
     b  = bytearray(128*1024)
     mv = memoryview(b)
@@ -58,19 +71,19 @@ def sha256sum(filename):
     return h.hexdigest()
 
 def on_created(event):
-    print(f"hey, {event.src_path} has been created!")
+    print(f"*** CREATE EVENT *** {event.src_path}")
     file_path = event.src_path
     file_name = os.path.basename(file_path)
     upload_file(file_path, file_name)
 
 def on_deleted(event):
-    print(f"what the f**k! Someone deleted {event.src_path}!")
+    print(f"*** DELETE EVENT *** {event.src_path}")
 
 def on_modified(event):
-    print(f"hey buddy, {event.src_path} has been modified")
+    print(f"*** MODIFY EVENT *** {event.src_path}")
 
 def on_moved(event):
-    print(f"ok ok ok, someone moved {event.src_path} to {event.dest_path}")
+    print(f"*** MOVED EVENT *** {event.src_path} to {event.dest_path}")
 
 if __name__ == "__main__":
     patterns = ["*"]
