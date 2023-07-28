@@ -52,6 +52,10 @@ def sha1sum(filename):
     with open(filename, 'rb', buffering=0) as f:
         return hashlib.file_digest(f, 'sha1').hexdigest()
 
+def sha256sum(filename):
+    with open(filename, 'rb', buffering=0) as f:
+        return hashlib.file_digest(f, 'sha256').hexdigest()
+
 def sha1sum2(filename):
     h  = hashlib.sha1()
     b  = bytearray(128*1024)
@@ -61,7 +65,7 @@ def sha1sum2(filename):
             h.update(mv[:n])
     return h.hexdigest()
 
-def sha256sum(filename):
+def sha256sum2(filename):
     h  = hashlib.sha256()
     b  = bytearray(128*1024)
     mv = memoryview(b)
@@ -76,15 +80,6 @@ def on_created(event):
     file_name = os.path.basename(file_path)
     upload_file(file_path, file_name)
 
-def on_deleted(event):
-    print(f"*** DELETE EVENT *** {event.src_path}")
-
-def on_modified(event):
-    print(f"*** MODIFY EVENT *** {event.src_path}")
-
-def on_moved(event):
-    print(f"*** MOVED EVENT *** {event.src_path} to {event.dest_path}")
-
 if __name__ == "__main__":
     patterns = ["*"]
     ignore_patterns = None
@@ -94,9 +89,6 @@ if __name__ == "__main__":
     my_event_handler = PatternMatchingEventHandler(patterns, ignore_patterns, ignore_directories, case_sensitive)
 
     my_event_handler.on_created = on_created
-    my_event_handler.on_deleted = on_deleted
-    my_event_handler.on_modified = on_modified
-    my_event_handler.on_moved = on_moved
 
     path = "/files/uploads"
     go_recursively = True
