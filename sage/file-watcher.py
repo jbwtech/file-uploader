@@ -8,25 +8,9 @@ from watchdog.events import PatternMatchingEventHandler
 
 from pdflatex import PDFLaTeX
 
-def get_file_list(directory): 
-    return [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
-
-def wait_new_files(directory): 
-    previous_files = get_file_list(directory)
-    while True:
-        current_files = get_file_list(directory)
-        new_files = list(set(current_files) - set(previous_files))
-        for new_file in new_files:
-            print("New file created:", new_file)
-            file_path = os.path.join(directory, new_file)
-            file_name = os.path.basename(file_path)
-            upload_file(file_path, file_name)
-        previous_files = current_files
-        time.sleep(1)
-
 def upload_file(fullpath, filename):
     filedir = os.path.dirname(fullpath)
-    print("\nPATH  : ", filedir)
+    # print("PATH  : ", filedir)
     print("FILE  : ", filename)
     sum = sha1sum(fullpath)
     print("SHA1  : ", sum)
@@ -56,24 +40,6 @@ def sha256sum(filename):
     with open(filename, 'rb', buffering=0) as f:
         return hashlib.file_digest(f, 'sha256').hexdigest()
 
-def sha1sum2(filename):
-    h  = hashlib.sha1()
-    b  = bytearray(128*1024)
-    mv = memoryview(b)
-    with open(filename, 'rb', buffering=0) as f:
-        while n := f.readinto(mv):
-            h.update(mv[:n])
-    return h.hexdigest()
-
-def sha256sum2(filename):
-    h  = hashlib.sha256()
-    b  = bytearray(128*1024)
-    mv = memoryview(b)
-    with open(filename, 'rb', buffering=0) as f:
-        while n := f.readinto(mv):
-            h.update(mv[:n])
-    return h.hexdigest()
-
 def on_created(event):
     print(f"*** CREATE EVENT *** {event.src_path}")
     file_path = event.src_path
@@ -93,7 +59,7 @@ if __name__ == "__main__":
     path = "/files/uploads"
     go_recursively = True
 
-    print("Running file-watcher ... ")
+    print("Running file-watcher ... \n")
     
     my_observer = Observer()
     my_observer.schedule(my_event_handler, path, recursive=go_recursively)
