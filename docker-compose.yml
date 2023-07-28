@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: nginx/Dockerfile
     ports:
-      - "80:80"
+      - "33280:80"
     volumes:
       - files:/var/www/html
     networks:
