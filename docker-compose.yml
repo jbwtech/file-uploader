@@ -10,6 +10,9 @@ services:
       - files:/var/www/html
     networks:
       - internal
+    depends_on:
+      - php
+      - sage
   php:
     image: php:fpm-alpine
     volumes:
