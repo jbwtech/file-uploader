@@ -10,7 +10,6 @@ RUN apt update && apt install -y \
     git
 
 FROM base AS watcher
-ENV UPLOAD_DIR=/files/uploads
 ADD sage/docker-entrypoint.sh /usr/local/bin/
 ADD sage/file-watcher.py /home/sage/
 ADD sage/file-processor.sh /home/sage/
