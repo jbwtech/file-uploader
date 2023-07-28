@@ -1,5 +1,6 @@
 #!/bin/bash
 FILE=$1
+UPLOAD_DIR=$2
 
 sudo chown sage:sage "${UPLOAD_DIR}/${FILE}.tex"
 
