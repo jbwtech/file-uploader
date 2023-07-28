@@ -22,7 +22,7 @@ def upload_file(fullpath, filename):
     #     pdfl = PDFLaTeX.from_binarystring(f.read(), 'my_file')
 
     try:
-        result = subprocess.run(["./file-processor.sh", os.path.splitext(texfile)[0]], capture_output=True, text=True)
+        result = subprocess.run(["./file-processor.sh", os.path.splitext(texfile)[0], filedir], capture_output=True, text=True)
         if( result.returncode == 0):
             print(result.stdout)
         else:
